@@ -11,9 +11,9 @@ public class AudioPlayer implements AutoCloseable {
     private Clip clip;
     private volatile boolean isPlaying;
 
-    //_______play_______
-    // 지정된 오디오 파일을 재생
-    // 파일을 찾아서 연속 재생 모드로 실행
+    // play 메소드
+    // 메소드 기능1: 주어진 파일 경로의 오디오 파일을 재생
+    // 메소드 기능2: 오디오 파일을 반복 재생
     public synchronized void play(String filePath) throws AudioPlayerException {
         try {
             close();
@@ -40,9 +40,9 @@ public class AudioPlayer implements AutoCloseable {
         }
     }
 
-    //_______close_______
-    // 오디오 재생을 중단하고 리소스 해제
-    // 클립과 오디오 스트림을 안전하게 종료
+    // close 메소드
+    // 메소드 기능1: 현재 재생 중인 오디오를 중지
+    // 메소드 기능2: 오디오 스트림과 클립을 닫음
     @Override
     public synchronized void close() {
         isPlaying = false;
@@ -67,13 +67,15 @@ public class AudioPlayer implements AutoCloseable {
         }
     }
 
-    //_______stop_______
-    // 오디오 재생을 중단
-    // close 메소드를 호출하여 재생 중단 및 리소스 정리
+    // stop 메소드
+    // 메소드 기능1: 현재 재생 중인 오디오를 중지
+    // 메소드 기능2: 오디오 스트림과 클립을 닫음
     public synchronized void stop() {
         close();
     }
 
+    // isPlaying 메소드
+    // 메소드 기능1: 오디오가 재생 중인지 여부를 반환
     public boolean isPlaying() {
         return isPlaying;
     }

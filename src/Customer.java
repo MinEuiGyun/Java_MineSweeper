@@ -14,9 +14,12 @@ public class Customer {
     private String salt;
     private int mileage;
     private List<MileageRecord> mileageRecords;
-    private Set<String> purchasedColors;  // 구매한 색상 저장
+    private Set<String> purchasedColors; 
     private int winStreak;
 
+    // Constructor
+    // Initializes a new Customer object with the given name, customerId, and password.
+    // Generates a salt and hashes the password.
     public Customer(String name, String customerId, String password) {
         this.name = name;
         this.customerId = customerId;
@@ -29,6 +32,8 @@ public class Customer {
     }
 
     // Constructor for serialization
+    // Initializes a new Customer object with the given name, customerId, passwordHash, and salt.
+    // Used for deserialization.
     public Customer(String name, String customerId, String passwordHash, String salt) {
         this.name = name;
         this.customerId = customerId;
@@ -39,22 +44,18 @@ public class Customer {
         this.purchasedColors = new HashSet<>();
     }
 
-    //_______generateSalt_______
-    // 비밀번호 암호화용 임의의 솔트값 생성
-    // Base64로 인코딩된 16바이트 솔트 문자열 반환
-    // 보안을 위한 임의의 솔트값을 생성
-    // Base64로 인코딩된 16바이트 솔트 문자열을 반환
+    // generateSalt
+    // Generates a random salt for password hashing.
+    // Returns the salt as a Base64 encoded string.
     private String generateSalt() {
         byte[] saltBytes = new byte[16];
         new SecureRandom().nextBytes(saltBytes);
         return Base64.getEncoder().encodeToString(saltBytes);
     }
 
-    //_______hashPassword_______
-    // 비밀번호를 솔트와 함께 해시처리
-    // SHA-256으로 암호화된 비밀번호 문자열 반환
-    // 비밀번호와 솔트를 결합하여 SHA-256 해시 생성
-    // 해시된 비밀번호를 Base64로 인코딩하여 반환
+    // hashPassword
+    // Hashes the given password with the provided salt using SHA-256.
+    // Returns the hashed password as a Base64 encoded string.
     private String hashPassword(String password, String salt) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
@@ -66,36 +67,34 @@ public class Customer {
         }
     }
 
-    //_______getMileageRecords_______
-    // 고객의 마일리지 기록 목록을 반환
-    // 모든 마일리지 적립 및 사용 내역이 포함된 리스트 반환
+    // getMileageRecords
+    // Returns the list of mileage records.
     public List<MileageRecord> getMileageRecords() {
         return mileageRecords;
     }
 
+    // getPasswordHash
+    // Returns the hashed password.
     public String getPasswordHash() {
         return passwordHash;
     }
 
+    // getSalt
+    // Returns the salt used for password hashing.
     public String getSalt() {
         return salt;
     }
 
-    //_______addMileage_______
-    // 마일리지 적립 처리
-    // 마일리지 증가 및 적립 기록 추가
-    // 고객의 마일리지를 증가시키고 기록을 추가
-    // 증가된 마일리지 금액과 설명을 기록에 저장
+    // addMileage
+    // Adds the specified amount of mileage and records the transaction with a description.
     public void addMileage(int amount, String description) {
         mileage += amount;
         mileageRecords.add(new MileageRecord(amount, description, true));
     }
 
-    //_______deductMileage_______
-    // 마일리지 차감 처리
-    // 잔액 확인 후 차감 및 사용 기록 추가
-    // 고객의 마일리지를 차감하고 기록을 추가
-    // 차감 가능한 경우 true, 잔액 부족시 false 반환
+    // deductMileage
+    // Deducts the specified amount of mileage if available and records the transaction with a description.
+    // Returns true if the deduction was successful, false otherwise.
     public boolean deductMileage(int amount, String description) {
         if (mileage >= amount) {
             mileage -= amount;
@@ -105,23 +104,28 @@ public class Customer {
         return false;
     }
 
+    // addPurchasedColor
+    // Adds the specified color to the set of purchased colors.
     public void addPurchasedColor(String colorName) {
         purchasedColors.add(colorName);
     }
 
+    // hasColorPurchased
+    // Checks if the specified color has been purchased.
+    // Returns true if the color is in the set of purchased colors, false otherwise.
     public boolean hasColorPurchased(String colorName) {
         return purchasedColors.contains(colorName);
     }
 
+    // getPurchasedColors
+    // Returns a copy of the set of purchased colors.
     public Set<String> getPurchasedColors() {
         return new HashSet<>(purchasedColors);
     }
 
-    //_______serialize_______
-    // 고객 정보를 문자열로 변환
-    // 모든 고객 데이터를 포함한 문자열 형식으로 반환
-    // 고객 정보를 문자열로 직렬화
-    // 모든 고객 데이터를 포함한 형식화된 문자열 반환
+    // serialize
+    // Serializes the Customer object to a string representation.
+    // Includes customer information, mileage records, purchased colors, and win streak.
     public String serialize() {
         StringBuilder sb = new StringBuilder();
         sb.append("======================================\n");
@@ -154,11 +158,9 @@ public class Customer {
         return sb.toString();
     }
 
-    //_______deserialize_______
-    // 문자열에서 고객 정보를 복원
-    // 저장된 문자열로부터 Customer 객체 생성
-    // 문자열에서 고객 정보를 역직렬화
-    // 직렬화된 문자열로부터 Customer 객체 생성하여 반환
+    // deserialize
+    // Deserializes a string representation of a Customer object.
+    // Returns the Customer object.
     public static Customer deserialize(String data) {
         String[] parts = data.split("\n");
         if (parts.length < 2) {
@@ -199,33 +201,40 @@ public class Customer {
         return customer;
     }
 
-    // Add missing getter methods
+    // getCustomerId
+    // Returns the customer ID.
     public String getCustomerId() {
         return customerId;
     }
 
+    // getName
+    // Returns the name of the customer.
     public String getName() {
         return name;
     }
 
+    // getMileage
+    // Returns the total mileage of the customer.
     public int getMileage() {
         return mileage;
     }
 
-    //_______checkPassword_______
-    // 비밀번호 일치 여부 확인
-    // 입력된 비밀번호와 저장된 해시값 비교
-    // 입력된 비밀번호의 유효성을 검사
-    // 비밀번호가 일치하면 true, 불일치시 false 반환
+    // checkPassword
+    // Checks if the provided password matches the stored hashed password.
+    // Returns true if the passwords match, false otherwise.
     public boolean checkPassword(String password) {
         String hashedPassword = hashPassword(password, salt);
         return passwordHash.equals(hashedPassword);
     }
 
+    // getWinStreak
+    // Returns the current win streak of the customer.
     public int getWinStreak() {
         return winStreak;
     }
 
+    // setWinStreak
+    // Sets the win streak of the customer to the specified value.
     public void setWinStreak(int winStreak) {
         this.winStreak = winStreak;
     }

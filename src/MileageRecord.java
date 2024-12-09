@@ -14,32 +14,44 @@ public class MileageRecord {
         this.isCredit = isCredit;
     }
 
+    // 메소드 이름: getDate
+    // 메소드 기능1: 날짜를 문자열로 반환
+    // 메소드 기능2: "yyyy-MM-dd HH:mm:ss" 형식으로 포맷
     public String getDate() {
         return date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 
+    // 메소드 이름: getAmount
+    // 메소드 기능1: 금액을 반환
+    // 메소드 기능2: 없음
     public int getAmount() {
         return amount;
     }
 
+    // 메소드 이름: getDescription
+    // 메소드 기능1: 설명을 반환
+    // 메소드 기능2: 없음
     public String getDescription() {
         return description;
     }
 
+    // 메소드 이름: isCredit
+    // 메소드 기능1: 크레딧 여부를 반환
+    // 메소드 기능2: 없음
     public boolean isCredit() {
         return isCredit;
     }
 
-    // Used for serialization
-    // 마일리지 기록을 문자열로 변환
-    // 날짜, 금액, 설명, 적립/차감 여부를 포함한 문자열 반환
+    // 메소드 이름: serialize
+    // 메소드 기능1: 객체를 문자열로 직렬화
+    // 메소드 기능2: "날짜,금액,설명,크레딧여부" 형식으로 반환
     public String serialize() {
         return String.format("%s,%d,%s,%b", getDate(), amount, description, isCredit);
     }
 
-    // Used for deserialization
-    // 문자열에서 마일리지 기록을 복원
-    // 저장된 문자열로부터 MileageRecord 객체 생성
+    // 메소드 이름: deserialize
+    // 메소드 기능1: 문자열을 객체로 역직렬화
+    // 메소드 기능2: 문자열을 분리하여 객체 생성
     public static MileageRecord deserialize(String data) {
         String[] parts = data.split(",");
         LocalDateTime date = LocalDateTime.parse(parts[0], DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));

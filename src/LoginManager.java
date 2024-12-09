@@ -17,21 +17,22 @@ public class LoginManager {
         this.users = mileageManager.getAllCustomers();
     }
 
+    // getMileageManager 메소드
+    // 메소드 기능1: mileageManager 객체 반환
     public CustomerMileageManager getMileageManager() {
         return mileageManager;
     }
 
-    //_______USER_DATA_MANAGEMENT_______
-    // Handles file-based user data storage
-    // Uses BufferedReader/BufferedWriter for file operations
+    // saveUsers 메소드
+    // 메소드 기능1: 사용자 데이터 저장
     private synchronized void saveUsers() {
         // Save users via CustomerMileageManager
         mileageManager.saveData();
     }
 
-    //_______USER_VALIDATION_______
-    // Validates username and password format
-    // Uses regex for input validation
+    // validateInput 메소드
+    // 메소드 기능1: 입력값 검증
+    // 메소드 기능2: 유효한 사용자명 및 비밀번호 형식 확인
     private boolean validateInput(String username, String password) {
         if (username == null || password == null) {
             return false;
@@ -47,15 +48,17 @@ public class LoginManager {
         return true;
     }
 
-    //_______SECURITY_OPERATIONS_______
-    // Implements password hashing using SHA-256
-    // Uses SecureRandom for salt generation
+    // generateSalt 메소드
+    // 메소드 기능1: 새로운 솔트 생성
     private String generateSalt() {
         byte[] salt = new byte[SALT_LENGTH];
         new SecureRandom().nextBytes(salt);
         return Base64.getEncoder().encodeToString(salt);
     }
 
+    // hashPassword 메소드
+    // 메소드 기능1: 비밀번호 해싱
+    // 메소드 기능2: 솔트와 결합하여 해시 생성
     private String hashPassword(String password, String salt) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
@@ -68,6 +71,9 @@ public class LoginManager {
         }
     }
 
+    // register 메소드
+    // 메소드 기능1: 사용자 등록
+    // 메소드 기능2: 입력값 검증 및 중복 사용자 확인
     public boolean register(String username, String password) {
         // 입력값 검증
         if (!validateInput(username, password)) {
@@ -100,30 +106,13 @@ public class LoginManager {
         }
     }
 
+    // login 메소드
+    // 메소드 기능1: 사용자 로그인
+    // 메소드 기능2: 입력값 검증 및 인증
     public boolean login(String username, String password) {
         if (!validateInput(username, password)) {
             return false;
         }
         return mileageManager.authenticateCustomer(username, password);
     }
-
-    //_______generateSalt_______
-    // 비밀번호 암호화를 위한 솔트값 생성
-    // 16바이트 길이의 무작위 솔트값 생성 및 반환
-
-    //_______hashPassword_______
-    // 비밀번호와 솔트를 결합하여 해시 생성
-    // SHA-256 알고리즘으로 암호화된 비밀번호 문자열 반환
-
-    //_______validateInput_______
-    // 사용자명과 비밀번호의 유효성 검사
-    // 입력값이 정해진 형식에 맞는지 확인하고 결과 반환
-
-    //_______register_______
-    // 새로운 사용자 등록 처리
-    // 유효성 검사 후 사용자 정보 저장 및 결과 반환
-
-    //_______login_______
-    // 사용자 로그인 인증 처리
-    // 입력된 정보 검증 후 로그인 성공 여부 반환
 }

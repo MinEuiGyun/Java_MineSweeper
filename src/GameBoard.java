@@ -17,12 +17,9 @@ public class GameBoard extends JPanel {
     private final Runnable gameOverCallback;
     private boolean gameOver;
     private boolean firstClick = true;
-    private Color cellColor = Color.LIGHT_GRAY; // 기본 셀 색상
-    // NUMBER_COLORS 필드 제거 - Cell 클래스에서 직접 GameResources.NUMBER_COLORS 사용
+    private Color cellColor = Color.LIGHT_GRAY; 
 
-    //_______게임보드_생성자_______
-    //게임보드의 크기, 지뢰 수, 승패 콜백을 설정
-    //화면 크기에 맞춰 셀 크기를 자동 조절
+    // GameBoard 생성자 // 게임 보드 초기화 // 지뢰 배치 및 인접 지뢰 계산
     public GameBoard(int rows, int cols, int mines, Runnable winCallback, Runnable gameOverCallback) {
         this.rows = rows;
         this.cols = cols;
@@ -31,16 +28,13 @@ public class GameBoard extends JPanel {
         this.gameOverCallback = gameOverCallback;
         this.gameOver = false;
 
-        // Use maximum dimension to ensure square board
         int maxDim = Math.max(rows, cols);
         setLayout(new GridLayout(maxDim, maxDim, 1, 1));
         setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
         setBackground(Color.GRAY); // Change background color to gray
 
-        // Use fixed cell size instead of calculating from screen resolution
         int cellSize = 30;
 
-        // Set the board size to be square
         int boardSize = cellSize * maxDim;
         setPreferredSize(new Dimension(boardSize, boardSize));
 
@@ -49,9 +43,7 @@ public class GameBoard extends JPanel {
         calculateAdjacentMines();
     }
 
-    //_______셀_초기화_______
-    //지정된 크기로 셀을 생성하고 초기화
-    //각 셀에 대한 이벤트 리스너 설정
+    // initializeCells // 셀 초기화 // 셀 클릭 이벤트 리스너 추가
     private void initializeCells(int maxDim, int cellSize) {
         for (int row = 0; row < maxDim; row++) {
             for (int col = 0; col < maxDim; col++) {
@@ -66,7 +58,6 @@ public class GameBoard extends JPanel {
                     cell.setBackground(Color.DARK_GRAY);
                 }
                 
-                // Set cell size and style
                 cell.setPreferredSize(new Dimension(cellSize, cellSize));
                 cell.setMinimumSize(new Dimension(cellSize, cellSize));
                 cell.setMaximumSize(new Dimension(cellSize, cellSize));
@@ -89,32 +80,26 @@ public class GameBoard extends JPanel {
         }
     }
 
-    //_______우클릭_처리_______
-    //셀에 깃발을 설정하거나 해제
-    //게임 종료 상태에서는 동작하지 않음
+    // handleRightClick // 우클릭 처리 // 깃발 토글
     private void handleRightClick(Cell cell) {
         if (gameOver) return; 
         cell.toggleFlag();
     }
 
-    //_______CELL_CLICK_HANDLING_______
-    // Processes left and right mouse clicks
-    // Implements game logic for cell revelation
+    // handleCellClick // 셀 클릭 처리 // 첫 클릭 시 지뢰 재배치 및 최적화
     private void handleCellClick(Cell cell) {
-        if (gameOver || cell.isFlagged()) return; // 게임 종료 또는 플래그된 셀은 무시
+        if (gameOver || cell.isFlagged()) return; 
 
         if (firstClick) {
             firstClick = false;
-            // 첫 클릭이 지뢰인 경우 지뢰를 다른 위치로 이동
             if (cell.isMine()) {
                 relocateMine(cell);
             }
-            // 첫 클릭 주변의 지뢰 배치도 조정하여 50-50 상황 방지
             optimizeMineLayout(cell);
         }
 
         if (cell.isMine()) {
-            cell.reveal(cellColor); // This will show red background for the clicked mine
+            cell.reveal(cellColor); 
             revealAllMines();
             gameOver = true;
             gameOverCallback.run();
@@ -127,17 +112,18 @@ public class GameBoard extends JPanel {
         }
     }
 
+    // relocateMine // 지뢰 재배치 // 인접 지뢰 수 재계산
     private void relocateMine(Cell cell) {
         cell.setMine(false);
         placeMines(1);
-        calculateAdjacentMines(); // 인접 지뢰 수 재계산
+        calculateAdjacentMines(); 
     }
 
+    // optimizeMineLayout // 지뢰 배치 최적화 // 50-50 상황 해결
     private void optimizeMineLayout(Cell cell) {
         int row = cell.getRow();
         int col = cell.getCol();
         
-        // 첫 클릭 주변 3x3 영역에서 지뢰 제거
         for (int dRow = -1; dRow <= 1; dRow++) {
             for (int dCol = -1; dCol <= 1; dCol++) {
                 int nRow = row + dRow;
@@ -148,10 +134,10 @@ public class GameBoard extends JPanel {
             }
         }
         
-        // 50-50 상황 감지 및 수정
         checkAndFixFiftyFiftySituations();
     }
 
+    // checkAndFixFiftyFiftySituations // 50-50 상황 확인 및 해결 // 지뢰 재배치
     private void checkAndFixFiftyFiftySituations() {
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < cols; col++) {
@@ -162,8 +148,8 @@ public class GameBoard extends JPanel {
         }
     }
 
+    // isFiftyFiftySituation // 50-50 상황인지 확인 // 인접 셀의 지뢰 및 미확인 셀 수 계산
     private boolean isFiftyFiftySituation(int row, int col) {
-        // 두 개의 인접한 셀만 남아있고, 그 중 하나가 반드시 지뢰인 상황 감지
         if (!isValidCell(row, col) || cells[row][col].isMine()) {
             return false;
         }
@@ -190,6 +176,7 @@ public class GameBoard extends JPanel {
         return unknownCells == 2 && mineCount == 1;
     }
 
+    // fixFiftyFiftySituation // 50-50 상황 해결 // 인접 지뢰 재배치
     private void fixFiftyFiftySituation(int row, int col) {
         // 50-50 상황을 해결하기 위해 지뢰 재배치
         for (int dRow = -1; dRow <= 1; dRow++) {
@@ -204,10 +191,12 @@ public class GameBoard extends JPanel {
         }
     }
 
+    // isValidCell // 유효한 셀인지 확인 // 행과 열 범위 내인지 확인
     private boolean isValidCell(int row, int col) {
         return row >= 0 && row < rows && col >= 0 && col < cols;
     }
 
+    // revealAdjacentCells // 인접 셀 공개 // 인접 지뢰가 없는 경우 재귀적으로 공개
     private void revealAdjacentCells(Cell cell) {
         int row = cell.getRow();
         int col = cell.getCol();
@@ -229,6 +218,7 @@ public class GameBoard extends JPanel {
         }
     }
 
+    // revealAllMines // 모든 지뢰 공개 // 게임 오버 시 호출
     private void revealAllMines() {
         for (Cell[] row : cells) {
             for (Cell cell : row) {
@@ -249,6 +239,7 @@ public class GameBoard extends JPanel {
         }
     }
 
+    // checkWinCondition // 승리 조건 확인 // 모든 지뢰 외 셀이 공개되었는지 확인
     private void checkWinCondition() {
         for (Cell[] row : cells) {
             for (Cell cell : row) {
@@ -259,9 +250,7 @@ public class GameBoard extends JPanel {
         winCallback.run();
     }
 
-    //_______MINE_PLACEMENT_______
-    // Randomly distributes mines on the board
-    // Ensures first click safety
+    // placeMines // 지뢰 배치 // 무작위 위치에 지뢰 배치
     private void placeMines(int mines) {
         int placed = 0;
         while (placed < mines) {
@@ -275,6 +264,7 @@ public class GameBoard extends JPanel {
         }
     }
 
+    // calculateAdjacentMines // 인접 지뢰 수 계산 // 각 셀의 인접 지뢰 수 설정
     private void calculateAdjacentMines() {
         for (int row = 0; row < cells.length; row++) {
             for (int col = 0; col < cells[0].length; col++) {
@@ -286,6 +276,7 @@ public class GameBoard extends JPanel {
         }
     }
 
+    // countAdjacentMines // 인접 지뢰 수 세기 // 인접 셀의 지뢰 수 계산
     private int countAdjacentMines(int row, int col) {
         int count = 0;
         for (int dRow = -1; dRow <= 1; dRow++) {
@@ -302,6 +293,7 @@ public class GameBoard extends JPanel {
         return count;
     }
 
+    // setCellColor // 셀 색상 설정 // 공개되지 않은 셀의 색상 변경
     public void setCellColor(Color color) {
         this.cellColor = color;
         for (int row = 0; row < rows; row++) {
@@ -313,19 +305,22 @@ public class GameBoard extends JPanel {
         }
     }
 
+    // setFirstClick // 첫 클릭 여부 설정 // 첫 클릭 여부 변경
     public void setFirstClick(boolean value) {
         this.firstClick = value;
     }
-    
+
+    // isFirstClick // 첫 클릭 여부 확인 // 첫 클릭 여부 반환
     public boolean isFirstClick() {
         return firstClick;
     }
 
+    // setGameOver // 게임 오버 여부 설정 // 게임 오버 여부 변경
     public void setGameOver(boolean value) {
         this.gameOver = value;
     }
 
-    // Save the current board state to a writer
+    // saveBoardState // 보드 상태 저장 // 셀 상태를 파일에 저장
     public void saveBoardState(BufferedWriter writer) throws IOException {
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < cols; col++) {
@@ -338,7 +333,7 @@ public class GameBoard extends JPanel {
         }
     }
 
-    // Load the board state from a reader
+    // loadBoardState // 보드 상태 로드 // 파일에서 셀 상태를 불러옴
     public void loadBoardState(BufferedReader reader) throws IOException {
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < cols; col++) {
@@ -364,6 +359,7 @@ public class GameBoard extends JPanel {
     }
 
     @Override
+    // setEnabled // 보드 활성화/비활성화 // 모든 셀의 활성화/비활성화 설정
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
         for (Cell[] row : cells) {

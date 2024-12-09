@@ -9,9 +9,9 @@ public class CustomerMileageManager {
     private final String dataFilePath;
     private final ReentrantLock lock = new ReentrantLock();
 
-    //_______싱글톤_인스턴스_획득_______
-    //CustomerMileageManager의 유일한 인스턴스를 반환
-    //처음 호출 시 새로운 인스턴스 생성
+    // getInstance
+    // Returns the singleton instance of CustomerMileageManager
+    // Initializes the instance if it is null
     public static synchronized CustomerMileageManager getInstance() {
         if (instance == null) {
             instance = new CustomerMileageManager(GameResources.USER_DATA_FILE);
@@ -19,14 +19,16 @@ public class CustomerMileageManager {
         return instance;
     }
 
+    // CustomerMileageManager
+    // Constructor to initialize dataFilePath and load mileage data
     protected CustomerMileageManager(String dataFilePath) {
         this.dataFilePath = dataFilePath;
         this.mileageMap = loadData();
     }
 
-    //_______고객_등록_______
-    //새로운 고객을 시스템에 등록
-    //중복 ID 체크 및 데이터 저장 수행
+    // registerCustomer
+    // Registers a new customer if the customerId is not already in use
+    // Saves the updated mileage data to the file
     public boolean registerCustomer(String name, String customerId, String password) {
         lock.lock();
         try {
@@ -43,6 +45,9 @@ public class CustomerMileageManager {
         }
     }
 
+    // authenticateCustomer
+    // Authenticates a customer using customerId and password
+    // Returns true if authentication is successful
     public boolean authenticateCustomer(String customerId, String password) {
         Customer customer = mileageMap.get(customerId);
         if (customer != null) {
@@ -51,6 +56,9 @@ public class CustomerMileageManager {
         return false;
     }
 
+    // addMileage
+    // Adds mileage to a customer's account
+    // Saves the updated mileage data to the file
     public void addMileage(String customerId, int mileage, String description) {
         lock.lock();
         try {
@@ -64,6 +72,9 @@ public class CustomerMileageManager {
         }
     }
 
+    // useMileage
+    // Deducts mileage from a customer's account if sufficient mileage is available
+    // Saves the updated mileage data to the file
     public boolean useMileage(String customerId, int mileage, String description) {
         lock.lock();
         try {
@@ -78,17 +89,20 @@ public class CustomerMileageManager {
         }
     }
 
+    // getCustomer
+    // Retrieves a customer object by customerId
     public Customer getCustomer(String customerId) {
         return mileageMap.get(customerId);
     }
 
+    // getAllCustomers
+    // Returns a map of all customers
     public Map<String, Customer> getAllCustomers() {
         return mileageMap;
     }
 
-    //_______데이터_저장_______
-    //현재 메모리의 고객 데이터를 파일에 저장
-    //스레드 안전성을 위해 잠금 사용
+    // saveData
+    // Saves the mileage data of all customers to the file
     public void saveData() {
         lock.lock();
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(dataFilePath))) {
@@ -103,14 +117,16 @@ public class CustomerMileageManager {
         }
     }
 
+    // loadData
+    // Loads mileage data from the file and returns a map of customers
+    // Creates a new file if it does not exist
     private Map<String, Customer> loadData() {
         Map<String, Customer> map = new HashMap<>();
         File file = new File(dataFilePath);
         
-        // 파일이 없으면 디렉토리 생성 후 빈 파일 생성
         if (!file.exists()) {
             try {
-                file.getParentFile().mkdirs(); // resources 디렉토리 생성
+                file.getParentFile().mkdirs(); 
                 file.createNewFile();
                 return map;
             } catch (IOException e) {
@@ -143,7 +159,6 @@ public class CustomerMileageManager {
                 }
             }
 
-            // 마지막 고객 데이터 처리
             if (isReadingCustomer && data.length() > 0) {
                 try {
                     Customer customer = Customer.deserialize(data.toString());

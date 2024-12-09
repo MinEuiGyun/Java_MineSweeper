@@ -3,6 +3,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public final class GameResources {
+    // 메소드 이름: GameResources
+    // 메소드 기능1: 생성자를 private으로 설정하여 인스턴스화 방지
     private GameResources() {}
 
     public static final String RESOURCES_PATH = "./resources/";
@@ -11,10 +13,12 @@ public final class GameResources {
     public static final String BACKGROUND_MUSIC_FILE = RESOURCES_PATH + "background_music.wav";
     public static final String LOGO_FILE = RESOURCES_PATH + "mine.jpg";
 
-    public static final Color EMPTY_SPACE_COLOR = new Color(211, 211, 211); // Light Gray
+    public static final Color EMPTY_SPACE_COLOR = new Color(211, 211, 211);
 
     public static final Map<String, Color> CELL_COLORS = new LinkedHashMap<>();
     static {
+        // 메소드 이름: static block
+        // 메소드 기능1: CELL_COLORS 맵에 색상 추가
         CELL_COLORS.put("기본", new Color(220, 220, 220));
         CELL_COLORS.put("하늘색", new Color(176, 226, 255));
         CELL_COLORS.put("연보라", new Color(230, 230, 250));
@@ -24,6 +28,8 @@ public final class GameResources {
 
     public static final Map<Integer, Color> NUMBER_COLORS = new LinkedHashMap<>();
     static {
+        // 메소드 이름: static block
+        // 메소드 기능1: NUMBER_COLORS 맵에 색상 추가
         NUMBER_COLORS.put(1, new Color(25, 118, 210));
         NUMBER_COLORS.put(2, new Color(56, 142, 60));
         NUMBER_COLORS.put(3, new Color(211, 47, 47));

@@ -44,15 +44,23 @@ public class MinesweeperGame {
     private JPanel infoPanel;
     private JButton smileButton;
 
+    // MinesweeperGame 생성자
+    // ExecutorService 초기화
+    // elapsedTime 초기화
     public MinesweeperGame() {
         executorService = Executors.newSingleThreadExecutor();
         elapsedTime = new AtomicInteger(0);
         loginManager = new LoginManager();
         audioPlayer = new AudioPlayer();
         mileageManager = loginManager.getMileageManager();
-        gameOver = false;  // Initialize gameOver
+        gameOver = false;
     }
 
+    // start 메소드
+    // Look and Feel 설정
+    // JFrame 설정 및 초기화
+    // 로그인 다이얼로그 표시
+    // 게임 보드 초기화 및 설정
     public void start() {
         try {
             // Look and Feel 설정
@@ -73,13 +81,11 @@ public class MinesweeperGame {
                 return;
             }
 
-            // 사용자 이름 입력
             playerName = JOptionPane.showInputDialog(frame, "이름을 입력하세요:", "사용자 이름", JOptionPane.QUESTION_MESSAGE);
             if (playerName == null || playerName.trim().isEmpty()) {
                 playerName = "플레이어";
             }
 
-            // 난이도 선택
             String[] options = {"쉬움", "보통", "어려움"};
             difficulty = (String) JOptionPane.showInputDialog(frame,
                     "난이도 선택:",
@@ -90,7 +96,6 @@ public class MinesweeperGame {
                     options[0]);
             if (difficulty == null) difficulty = "쉬움";
 
-            // 난이도 설정
             switch (difficulty) {
                 case "쉬움":
                     rows = 8; cols = 8; mines = 10;
@@ -103,22 +108,17 @@ public class MinesweeperGame {
                     break;
             }
 
-            // Ensure the game board is square
             if (rows != cols) {
                 cols = rows;
             }
 
-            // UI 구성 순서 변경
             mainPanel = new JPanel(new BorderLayout());
             
-            // 상단 정보 패널
             initializeInfoPanel();
 
-            // 게임 보드 초기화
             gameBoard = new GameBoard(rows, cols, mines, this::onWin, this::onGameOver);
             gameBoard.setCellColor(cellColor);
             
-            // 게임 보드 패널 설정
             gameBoardPanel = new JPanel(new BorderLayout());
             gameBoardPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createEmptyBorder(10, 10, 10, 10),
@@ -127,10 +127,8 @@ public class MinesweeperGame {
             gameBoardPanel.add(gameBoard);
             mainPanel.add(gameBoardPanel, BorderLayout.CENTER);
 
-            // 하단 버튼 패널 초기화
             initializeButtonPanel();
 
-            // 프레임에 메인 패널 추가
             frame.add(mainPanel);
             frame.pack();
             frame.setLocationRelativeTo(null);
@@ -144,6 +142,11 @@ public class MinesweeperGame {
         }
     }
 
+    // initializeInfoPanel 메소드
+    // 정보 패널 초기화
+    // 타이머 라벨 설정
+    // 스마일 버튼 설정
+    // 난이도 라벨 설정
     private void initializeInfoPanel() {
         infoPanel = new JPanel(new GridBagLayout());
         infoPanel.setBackground(new Color(250, 250, 250));
@@ -152,8 +155,7 @@ public class MinesweeperGame {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 15, 5, 15);
         gbc.fill = GridBagConstraints.BOTH;
-        
-        // Timer with different fonts for emoji and text
+
         gbc.gridx = 0;
         timerLabel = new JLabel();
         updateTimerLabel(0);
@@ -196,6 +198,10 @@ public class MinesweeperGame {
         mainPanel.add(infoPanel, BorderLayout.NORTH);
     }
 
+    // initializeButtonPanel 메소드
+    // 버튼 패널 초기화
+    // 마일리지 조회 버튼 설정
+    // 색상 커스터마이징 버튼 설정
     private void initializeButtonPanel() {
         JPanel buttonPanel = new JPanel(new GridLayout(1, 2, 20, 0));
         buttonPanel.setBackground(new Color(250, 250, 250));
@@ -213,6 +219,8 @@ public class MinesweeperGame {
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
     }
 
+    // createStyledButton 메소드
+    // 스타일이 적용된 버튼 생성
     private JButton createStyledButton(String text, Color color) {
         JButton button = new JButton(text);
         button.setFont(DEFAULT_FONT);
@@ -234,6 +242,10 @@ public class MinesweeperGame {
         return button;
     }
 
+    // showLoginDialog 메소드
+    // 로그인 다이얼로그 표시
+    // 로그인 처리
+    // 회원가입 처리
     private boolean showLoginDialog() {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
@@ -244,7 +256,6 @@ public class MinesweeperGame {
         gbc.gridy = 0;
         gbc.insets = new Insets(0, 0, 20, 0);
 
-        // 로고 이미지 추가
         try {
             URL imageUrl = MinesweeperGame.class.getResource("/mine.jpg");
             if (imageUrl == null) {
@@ -265,7 +276,6 @@ public class MinesweeperGame {
             }
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Failed to load logo image", e);
-            // 이미지 로딩 실패해도 게임 진행 가능
         }
 
         gbc.gridwidth = 1;
@@ -308,6 +318,8 @@ public class MinesweeperGame {
         return false;
     }
 
+    // startTimer 메소드
+    // 타이머 시작
     private void startTimer() {
         if (timer != null) {
             timer.cancel();
@@ -323,6 +335,8 @@ public class MinesweeperGame {
         }, 0, 1000);
     }
 
+    // processLogin 메소드
+    // 로그인 처리
     private boolean processLogin(String username, String password) {
         if (loginManager.login(username, password)) {
             playerName = username;
@@ -334,6 +348,9 @@ public class MinesweeperGame {
         return false;
     }
 
+    // showRegisterDialog 메소드
+    // 회원가입 다이얼로그 표시
+    // 회원가입 처리
     private boolean showRegisterDialog() {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
@@ -424,6 +441,10 @@ public class MinesweeperGame {
         return false;
     }
 
+    // cleanup 메소드
+    // 타이머 정지
+    // 오디오 플레이어 종료
+    // ExecutorService 종료
     private void cleanup() {
         if (timer != null) {
             timer.cancel();
@@ -434,10 +455,14 @@ public class MinesweeperGame {
         executorService.shutdown();
     }
 
+    // showError 메소드
+    // 에러 메시지 표시
     private void showError(String title, String message) {
         JOptionPane.showMessageDialog(frame, message, title, JOptionPane.ERROR_MESSAGE);
     }
 
+    // showAlert 메소드
+    // 알림 메시지 표시
     private void showAlert(String title, String message) {
         JOptionPane.showMessageDialog(
             frame,
@@ -447,7 +472,8 @@ public class MinesweeperGame {
         );
     }
 
-    // 파일 저장 메소드 수정
+    // saveGameResult 메소드
+    // 게임 결과 저장
     private void saveGameResult(String result) {
         try (FileWriter writer = new FileWriter(GameResources.GAME_RESULTS_FILE, true)) {
             writer.write(result + "\n");
@@ -456,6 +482,8 @@ public class MinesweeperGame {
         }
     }
 
+    // restartGame 메소드
+    // 게임 재시작
     private void restartGame() {
         int choice = JOptionPane.showConfirmDialog(frame, 
             "정말 게임을 다시 시작하시겠습니까?", 
@@ -464,7 +492,7 @@ public class MinesweeperGame {
             
         if (choice == JOptionPane.YES_OPTION) {
             if (gameOver || JOptionPane.showConfirmDialog(frame,
-                "진행 중인 게임이 있습니다. 정말 재시작하시겠습니까?",
+                "진행 중인 게임이 있습니다. ��말 재시작하시겠습니까?",
                 "재시작 확인",
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                 
@@ -495,6 +523,8 @@ public class MinesweeperGame {
         }
     }
 
+    // customizeCellColor 메소드
+    // 셀 색상 커스터마이징
     private void customizeCellColor() {
         if (!gameOver && JOptionPane.showConfirmDialog(frame,
                 "게임 진행 중에 색상을 변경하시겠습니까?",
@@ -509,11 +539,9 @@ public class MinesweeperGame {
             return;
         }
 
-        // 메인 패널 생성
         JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // 상단 헤더 추가 (제목, 마일리지 정보)
         JPanel headerPanel = new JPanel(new BorderLayout());
         JLabel titleLabel = new JLabel("색상 선택", SwingConstants.CENTER);
         titleLabel.setFont(new Font("맑은 고딕", Font.BOLD, 16));
@@ -523,13 +551,9 @@ public class MinesweeperGame {
         headerPanel.add(mileageLabel, BorderLayout.SOUTH);
         mainPanel.add(headerPanel, BorderLayout.NORTH);
 
-        // 색상 선택을 위한 메인 컨테이너 패널
         JPanel colorContainerPanel = new JPanel(new BorderLayout());
         colorContainerPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-        // 색상 선택 패널을 FlowLayout으로 변경하여 중앙 정렬
-        
-        // 보유 색상 섹션 패널
         JPanel ownedSection = new JPanel(new BorderLayout());
         JLabel ownedLabel = new JLabel("보유 중인 색상", SwingConstants.CENTER);
         ownedLabel.setFont(new Font("맑은 고딕", Font.BOLD, 14));
@@ -537,7 +561,7 @@ public class MinesweeperGame {
         
         JPanel ownedColors = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         
-        // 보유한 색상 표시
+
         for (Map.Entry<String, Color> entry : AVAILABLE_COLORS.entrySet()) {
             String colorName = entry.getKey();
             if (colorName.equals("기본") || customer.hasColorPurchased(colorName)) {
@@ -547,12 +571,10 @@ public class MinesweeperGame {
         
         ownedSection.add(ownedLabel, BorderLayout.NORTH);
         ownedSection.add(ownedColors, BorderLayout.CENTER);
-        
-        // 구분선 추가
+
         JSeparator separator = new JSeparator(JSeparator.HORIZONTAL);
         separator.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
         
-        // 구매 가능한 색상 섹션 패널
         JPanel purchasableSection = new JPanel(new BorderLayout());
         JLabel purchasableLabel = new JLabel("구매 가능한 색상", SwingConstants.CENTER);
         purchasableLabel.setFont(new Font("맑은 고딕", Font.BOLD, 14));
@@ -560,7 +582,6 @@ public class MinesweeperGame {
         
         JPanel purchasableColors = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         
-        // 구매 가능한 색상 표시
         for (Map.Entry<String, Color> entry : AVAILABLE_COLORS.entrySet()) {
             String colorName = entry.getKey();
             if (!colorName.equals("기본") && !customer.hasColorPurchased(colorName)) {
@@ -571,7 +592,6 @@ public class MinesweeperGame {
         purchasableSection.add(purchasableLabel, BorderLayout.NORTH);
         purchasableSection.add(purchasableColors, BorderLayout.CENTER);
         
-        // 섹션들을 수직으로 배치
         JPanel sectionsPanel = new JPanel();
         sectionsPanel.setLayout(new BoxLayout(sectionsPanel, BoxLayout.Y_AXIS));
         sectionsPanel.add(ownedSection);
@@ -580,13 +600,11 @@ public class MinesweeperGame {
         
         colorContainerPanel.add(sectionsPanel, BorderLayout.CENTER);
 
-        // 스크롤 패널에 컨테이너 추가
         JScrollPane scrollPane = new JScrollPane(colorContainerPanel);
         scrollPane.setPreferredSize(new Dimension(400, 400));
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
         mainPanel.add(scrollPane, BorderLayout.CENTER);
 
-        // 다이얼로그 생성 및 표시
         JDialog dialog = new JDialog(frame, "색상 커스터마이징", true);
         dialog.setContentPane(mainPanel);
         dialog.pack();
@@ -594,6 +612,8 @@ public class MinesweeperGame {
         dialog.setVisible(true);
     }
 
+    // addColorPreviewPanel 메소드
+    // 색상 미리보기 패널 추가
     private void addColorPreviewPanel(JPanel colorPanel, String colorName, Color color, Customer customer, boolean isOwned) {
         JPanel colorPreviewPanel = new JPanel(new BorderLayout(5, 5));
         colorPreviewPanel.setBorder(BorderFactory.createCompoundBorder(
@@ -602,14 +622,12 @@ public class MinesweeperGame {
         ));
         colorPreviewPanel.setPreferredSize(new Dimension(100, 80));
         
-        // 색상 미리보기 영역
         JPanel previewArea = new JPanel();
         previewArea.setBackground(color);
         previewArea.setPreferredSize(new Dimension(60, 40));
         JPanel previewContainer = new JPanel(new FlowLayout(FlowLayout.CENTER));
         previewContainer.add(previewArea);
         
-        // 색상 이름 및 상태 표시
         JLabel nameLabel = new JLabel(colorName + (isOwned ? "" : " (" + COLOR_PRICE + "M)"));
         nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
         nameLabel.setFont(new Font("맑은 고딕", cellColor.equals(color) ? Font.BOLD : Font.PLAIN, 12));
@@ -620,7 +638,6 @@ public class MinesweeperGame {
         colorPreviewPanel.add(previewContainer, BorderLayout.CENTER);
         colorPreviewPanel.add(nameLabel, BorderLayout.SOUTH);
         
-        // 마우스 이벤트 처리
         colorPreviewPanel.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseEntered(java.awt.event.MouseEvent e) {
@@ -669,6 +686,8 @@ public class MinesweeperGame {
         colorPanel.add(colorPreviewPanel);
     }
 
+    // showMileageDialog 메소드
+    // 마일리지 다이얼로그 표시
     private void showMileageDialog() {
         Customer customer = mileageManager.getCustomer(playerName);
         if (customer == null) {
@@ -696,7 +715,8 @@ public class MinesweeperGame {
         JOptionPane.showMessageDialog(frame, scrollPane, "마일리지 조회", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    // 배경음악 재생 부분 수정
+    // playBackgroundMusic 메소드
+    // 배경음악 재생
     private void playBackgroundMusic() {
         try {
             audioPlayer.play(GameResources.BACKGROUND_MUSIC_FILE);
@@ -705,12 +725,16 @@ public class MinesweeperGame {
         }
     }
 
+    // updateTimerLabel 메소드
+    // 타이머 라벨 업데이트
     private void updateTimerLabel(int time) {
         String emojiPart = "<html><font face='Noto Color Emoji'>⏱️</font>";
         String textPart = "<font face='맑은 고딕'> 시간: " + time + "</font></html>";
         timerLabel.setText(emojiPart + textPart);
     }
 
+    // onWin 메소드
+    // 승리 처리
     private void onWin() {
         audioPlayer.stop();
         if (timer != null) {
@@ -724,11 +748,13 @@ public class MinesweeperGame {
         mileageManager.addMileage(playerName, bonus, 
             String.format("게임 승리 (난이도: %s, %d연승)", difficulty, winStreak));
         gameBoard.setEnabled(false); 
-        gameBoard.setGameOver(true); // GameBoard에 게임 종료 상태 전달
+        gameBoard.setGameOver(true); 
         smileButton.setText("😎");
         showAlert("축하합니다!", result);
     }
 
+    // onGameOver 메소드
+    // 게임 오버 처리
     private void onGameOver() {
         audioPlayer.stop();
         if (timer != null) {
@@ -742,11 +768,13 @@ public class MinesweeperGame {
         mileageManager.useMileage(playerName, penalty, 
             String.format("게임 패배 (난이도: %s)", difficulty));
         gameBoard.setEnabled(false);
-        gameBoard.setGameOver(true); // GameBoard에 게임 종료 상태 전달
+        gameBoard.setGameOver(true);
         smileButton.setText("😲");
         showAlert("게임 오버", result);
     }
 
+    // calculateWinBonus 메소드
+    // 승리 보너스 계산
     private int calculateWinBonus() {
         int baseBonus = switch(difficulty) {
             case "쉬움" -> 50;
@@ -754,9 +782,11 @@ public class MinesweeperGame {
             case "어려움" -> 200;
             default -> 50;
         };
-        return baseBonus + (winStreak * 10); // 연승 보너스
+        return baseBonus + (winStreak * 10); 
     }
 
+    // calculateLossPenalty 메소드
+    // 패배 패널티 계산
     private int calculateLossPenalty() {
         return switch(difficulty) {
             case "쉬움" -> 10;
@@ -766,6 +796,8 @@ public class MinesweeperGame {
         };
     }
 
+    // processRegistration 메소드
+    // 회원가입 처리
     private boolean processRegistration(String username, String password, String confirm) {
         if (!password.equals(confirm)) {
             JOptionPane.showMessageDialog(frame, 

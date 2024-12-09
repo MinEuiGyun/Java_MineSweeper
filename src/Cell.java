@@ -14,15 +14,17 @@ public class Cell extends JButton {
     private boolean isFlagged;
     private boolean isRevealed;
     private int adjacentMines;
-    private static final Color REVEALED_COLOR = new Color(211, 211, 211); // 밝은 회색 (revealed)
+    private static final Color REVEALED_COLOR = new Color(211, 211, 211);
     private static final Map<Integer, Color> NUMBER_COLORS = GameResources.NUMBER_COLORS;
-    private static final Color UNREVEALED_COLOR = Color.WHITE; // 흰색 (unrevealed)
-    private static final Color MINE_COLOR = Color.RED; // 폭탄 배경색
-    private Color currentColor = UNREVEALED_COLOR; // 초기 색상을 흰색으로 변경
+    private static final Color UNREVEALED_COLOR = Color.WHITE; 
+    private static final Color MINE_COLOR = Color.RED; 
+    private Color currentColor = UNREVEALED_COLOR; 
     private static final Font EMOJI_FONT = new Font("Noto Color Emoji", Font.PLAIN, 16);
     private static final Font NUMBER_FONT = new Font("맑은 고딕", Font.BOLD, 14);
     private static final Color HOVER_COLOR = new Color(230, 230, 230);
 
+    // Cell constructor
+    // Initializes the cell with default properties and sets up the UI
     public Cell(int row, int col) {
         this.row = row;
         this.col = col;
@@ -35,7 +37,7 @@ public class Cell extends JButton {
         setFocusPainted(false);
         setBorderPainted(true);
         setBorder(BorderFactory.createRaisedBevelBorder());
-        setBackground(UNREVEALED_COLOR); // 초기 배경색을 흰색으로 설정
+        setBackground(UNREVEALED_COLOR); 
         
         int size = 30; // Ensure cells are square
         setPreferredSize(new Dimension(size, size));
@@ -57,34 +59,45 @@ public class Cell extends JButton {
         });
     }
 
+    // getRow method
+    // Returns the row index of the cell
     public int getRow() {
         return row;
     }
 
+    // getCol method
+    // Returns the column index of the cell
     public int getCol() {
         return col;
     }
 
+    // isMine method
+    // Checks if the cell contains a mine
     public boolean isMine() {
         return isMine;
     }
 
+    // setMine method
+    // Sets the mine status of the cell
     public void setMine(boolean isMine) {
         this.isMine = isMine;
     }
 
+    // isFlagged method
+    // Checks if the cell is flagged
     public boolean isFlagged() {
         return isFlagged;
     }
 
+    // setFlagged method
+    // Flags or unflags the cell and updates the UI
     public void setFlagged(boolean flagged) {
         isFlagged = flagged;
         setText(isFlagged ? "🚩" : "");
     }
 
-    //_______toggleFlag_______
-    // 셀의 깃발 상태를 전환
-    // 깃발이 없으면 설치하고, 있으면 제거
+    // toggleFlag method
+    // Toggles the flagged status of the cell and updates the UI
     public void toggleFlag() {
         if (!isRevealed) {
             isFlagged = !isFlagged;
@@ -93,37 +106,40 @@ public class Cell extends JButton {
         }
     }
 
+    // isRevealed method
+    // Checks if the cell is revealed
     public boolean isRevealed() {
         return isRevealed;
     }
 
+    // setRevealed method
+    // Reveals the cell and updates the UI based on its content
     public void setRevealed(boolean revealed) {
         isRevealed = revealed;
         if (isRevealed) {
-            setBackground(isMine ? MINE_COLOR : REVEALED_COLOR); // 지뢰가 아닌 경우 모두 회색으로
+            setBackground(isMine ? MINE_COLOR : REVEALED_COLOR); 
             if (isMine) {
                 setFont(EMOJI_FONT);
                 setText("💣");
             } else if (adjacentMines > 0) {
                 setFont(NUMBER_FONT);
                 setText(String.valueOf(adjacentMines));
-                setForeground(NUMBER_COLORS.get(adjacentMines)); // 숫자별 다른 색상
+                setForeground(NUMBER_COLORS.get(adjacentMines)); 
             }
-            setBorder(BorderFactory.createLineBorder(REVEALED_COLOR, 1)); // 테두리도 회색으로 설정
-            setBorderPainted(false); // 테두리 제거
+            setBorder(BorderFactory.createLineBorder(REVEALED_COLOR, 1)); 
+            setBorderPainted(false); 
         }
     }
 
-    //_______reveal_______
-    // 셀의 내용을 화면에 표시
-    // 지뢰인 경우 빨간 배경과 폭탄 이모지, 아닌 경우 주변 지뢰 개수 표시
+    // reveal method
+    // Reveals the cell with a custom color and updates the UI based on its content
     public void reveal(Color customColor) {
         if (!isRevealed && !isFlagged) {
             isRevealed = true;
             if (isMine) {
-                setBackground(MINE_COLOR); // 지뢰만 빨간색
+                setBackground(MINE_COLOR); 
             } else {
-                setBackground(REVEALED_COLOR); // 숫자와 빈 칸 모두 회색으로 통일
+                setBackground(REVEALED_COLOR); 
             }
             
             if (isMine) {
@@ -139,22 +155,25 @@ public class Cell extends JButton {
                     setText("");
                 }
             }
-            setBorder(BorderFactory.createLineBorder(REVEALED_COLOR, 1)); // 테두리도 회색으로 설정
+            setBorder(BorderFactory.createLineBorder(REVEALED_COLOR, 1)); 
             setOpaque(true);
         }
     }
 
+    // getAdjacentMines method
+    // Returns the number of adjacent mines
     public int getAdjacentMines() {
         return adjacentMines;
     }
 
+    // setAdjacentMines method
+    // Sets the number of adjacent mines
     public void setAdjacentMines(int adjacentMines) {
         this.adjacentMines = adjacentMines;
     }
 
-    //_______setCellColor_______
-    // 셀의 배경색을 변경
-    // 셀이 공개되지 않은 상태에서만 색상 변경 가능
+    // setCellColor method
+    // Sets the background color of the cell if it is not revealed
     public void setCellColor(Color color) {
         if (!isRevealed) {
             currentColor = color;
@@ -162,16 +181,18 @@ public class Cell extends JButton {
         }
     }
 
-    // For game over state, reveal mine without red background
+    // revealMine method
+    // Reveals the mine in the cell if it is not flagged
     public void revealMine() {
         if (isMine && !isFlagged) {
-            setBackground(MINE_COLOR); // 게임 오버시 모든 지뢰를 빨간색으로 표시
+            setBackground(MINE_COLOR); 
             setText("💣");
             setForeground(Color.BLACK);
         }
     }
 
-    // For wrong flag indicator
+    // markWrongFlag method
+    // Marks the cell with a wrong flag indication if it is flagged but not a mine
     public void markWrongFlag() {
         if (isFlagged && !isMine) {
             setText("❌");
