@@ -492,7 +492,7 @@ public class MinesweeperGame {
             
         if (choice == JOptionPane.YES_OPTION) {
             if (gameOver || JOptionPane.showConfirmDialog(frame,
-                "진행 중인 게임이 있습니다. ��말 재시작하시겠습니까?",
+                "진행 중인 게임이 있습니다. 정말 재시작하시겠습니까?",
                 "재시작 확인",
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                 
