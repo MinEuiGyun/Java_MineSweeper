@@ -296,7 +296,7 @@ public class MinesweeperGame {
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE,
                 null, new String[]{"로그인", "회원가입", "취소"}, "로그인");
 
-        if (result == 2) { // 취소 버튼 클릭 시
+        if (result == 2 || result == JOptionPane.CLOSED_OPTION) { // 취소 버튼 클릭 시 또는 창 닫기 시
             cleanup(); 
             System.exit(0);
             return false;
@@ -409,33 +409,18 @@ public class MinesweeperGame {
         guidelines.setFont(new Font("맑은 고딕", Font.PLAIN, 10));
         panel.add(guidelines, gbc);
 
-        if (JOptionPane.showConfirmDialog(frame, panel, "회원가입",
-                JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+        int result = JOptionPane.showConfirmDialog(frame, panel, "회원가입",
+                JOptionPane.OK_CANCEL_OPTION);
+
+        if (result == JOptionPane.CANCEL_OPTION || result == JOptionPane.CLOSED_OPTION) { // 취소 버튼 클릭 시 또는 창 닫기 시
+            cleanup(); 
+            System.exit(0);
+            return false;
+        } else if (result == JOptionPane.OK_OPTION) { // 회원가입
             return processRegistration(usernameField.getText(),
                                     new String(passwordField.getPassword()),
                                     new String(confirmField.getPassword()));
         }
-        return false;
-    }
-
-    private boolean processRegistration(String username, String password, String confirm) {
-        if (!password.equals(confirm)) {
-            JOptionPane.showMessageDialog(frame, 
-                "비밀번호가 일치하지 않습니다.",
-                "회원가입 실패", 
-                JOptionPane.ERROR_MESSAGE);
-            return false;
-        }
-        if (loginManager.register(username, password)) {
-            playerName = username;
-            return true;
-        }
-        JOptionPane.showMessageDialog(frame, 
-            "회원가입에 실패했습니다.\n" +
-            "아이디는 4자 이상이어야 합니다.\n" +
-            "비밀번호는 6자 이상의 영문과 숫자 조합이어야 합니다.",
-            "회원가입 실패", 
-            JOptionPane.ERROR_MESSAGE);
         return false;
     }
 
@@ -779,5 +764,26 @@ public class MinesweeperGame {
             case "어려움" -> 30;
             default -> 10;
         };
+    }
+
+    private boolean processRegistration(String username, String password, String confirm) {
+        if (!password.equals(confirm)) {
+            JOptionPane.showMessageDialog(frame, 
+                "비밀번호가 일치하지 않습니다.",
+                "회원가입 실패", 
+                JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        if (loginManager.register(username, password)) {
+            playerName = username;
+            return true;
+        }
+        JOptionPane.showMessageDialog(frame, 
+            "회원가입에 실패했습니다.\n" +
+            "아이디는 4자 이상이어야 합니다.\n" +
+            "비밀번호는 6자 이상의 영문과 숫자 조합이어야 합니다.",
+            "회원가입 실패", 
+            JOptionPane.ERROR_MESSAGE);
+        return false;
     }
 }
