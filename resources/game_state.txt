@@ -1,0 +1,72 @@
+admin1
+쉬움
+8 8 10
+21
+-4144960
+false
+0
+false
+false false false 0
+false false false 0
+false false false 1
+true false false 0
+false false false 1
+false false false 0
+false false false 0
+false false false 0
+false false false 0
+false false false 0
+false false false 1
+false false false 2
+false false false 2
+false false false 2
+false false false 2
+false false false 2
+false false false 1
+false false false 1
+false false false 1
+false false false 1
+true false false 0
+false false false 4
+true false false 0
+true false false 0
+false false false 1
+true false false 0
+false false false 1
+false false false 1
+false false true 2
+true false false 0
+true false false 0
+false false false 4
+false false false 1
+false false false 1
+false false false 1
+false false false 0
+false false false 1
+false false false 3
+true false false 0
+false false false 2
+false false false 0
+false false false 0
+false false false 0
+false false false 0
+false false false 0
+false false false 1
+false false false 1
+false false false 1
+false false false 0
+false false false 0
+false false false 0
+false false false 1
+false false false 1
+false false false 2
+false false false 1
+false false false 1
+false false false 0
+false false false 0
+false false false 0
+false false false 1
+true false false 0
+false false false 2
+true false false 0
+false false false 1
